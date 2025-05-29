@@ -2,19 +2,15 @@ doctrine:
     dbal:
         server_version: '8.0.31'
         url: '%env(resolve:DATABASE_URL)%'
-        use_savepoints: true
 
     orm:
         auto_generate_proxy_classes: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: false
         mappings:
-            Card:
+            Product:
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Card/Domain/Entity'
-                prefix: 'App\Card\Domain\Entity'
-                alias: Card
-
-        dql:
-            string_functions:
-                JSON_EXTRACT: App\Shared\Infrastructure\Doctrine\JsonExtract
+                type: attribute
+                dir: '%kernel.project_dir%/src/Product/Domain/Entity'
+                prefix: 'App\Product\Domain\Entity'
+                alias: Product

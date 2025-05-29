@@ -1,6 +1,5 @@
 services:
   backend:
-    user: "33:33"
     build: .
     container_name: symfony_app
     restart: always

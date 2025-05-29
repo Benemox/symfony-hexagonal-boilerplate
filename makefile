@@ -31,10 +31,6 @@ clean-cache:
 	rm -rf backend/.phpcs-cache backend/phpunit.result.cache backend/tests/phpunit.result.cache
 	docker exec -it symfony_app rm -rf /var/www/html/.phpcs-cache /var/www/html/tests/phpunit.result.cache
 
-import-cards:
-	@echo "🔹 Importando tarjetas..."
-	docker exec -it symfony_app bin/console app:import-cards
-
 
 console-backend:
 	@echo "🔧 Entrando al contenedor backend (symfony_app)..."
@@ -43,8 +39,3 @@ console-backend:
 console-frontend:
 	@echo "🔧 Entrando al contenedor frontend (vue_app)..."
 	docker exec -it vue_app sh
-
-fix-permissions:
-	@echo "🔧 Dando permisos de escritura para www-data..."
-	sudo chmod -R ug+rwX .
-	sudo chgrp -R 33 .
