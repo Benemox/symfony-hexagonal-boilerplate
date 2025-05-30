@@ -5,26 +5,29 @@ export GID := $(shell id -g)
 up:
 	@echo "🔹 Levantando backend..."
 	cd backend && UID=$(UID) GID=$(GID) docker compose up -d --build
-	@echo "🔹 Levantando frontend..."
-	cd frontend && UID=$(UID) GID=$(GID) docker compose up -d --build
 
 down:
 	@echo "🔻 Parando backend..."
 	cd backend && UID=$(UID) GID=$(GID) docker compose down
-	@echo "🔻 Parando frontend..."
-	cd frontend && UID=$(UID) GID=$(GID) docker compose down
 
+clean:
+	@echo "🧼 Limpiando backend..."
+	cd backend && docker compose down --volumes --remove-orphans
+test:
+	@echo "🧪 Ejecutando pruebas backend..."
+	cd backend && docker compose exec symfony_app php bin/phpunit --colors=always --testdox
 logs:
 	@echo "🧾 Logs backend..."
 	cd backend && docker compose logs -f
-	@echo "🧾 Logs frontend..."
-	cd frontend && docker compose logs -f
+
+migrate:
+	@echo "🔄 Ejecutando migraciones..."
+	cd backend && docker compose exec symfony_app php bin/console doctrine:migrations:migrate --no-interaction
 
 build:
 	@echo "🛠 Construyendo backend..."
 	cd backend && docker compose build
-	@echo "🛠 Construyendo frontend..."
-	cd frontend && docker compose build
+
 
 clean-cache:
 	@echo "🧹 Limpiando cachés de PHP..."
@@ -36,6 +39,3 @@ console-backend:
 	@echo "🔧 Entrando al contenedor backend (symfony_app)..."
 	docker exec -it symfony_app bash
 
-console-frontend:
-	@echo "🔧 Entrando al contenedor frontend (vue_app)..."
-	docker exec -it vue_app sh

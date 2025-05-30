@@ -10,7 +10,9 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 #[AsMessageHandler(bus: 'command.bus')]
 final class UpdateProductCommandHandler implements HandlerInterface
 {
-    public function __construct(private ProductRepositoryInterface $repository) {}
+    public function __construct(private ProductRepositoryInterface $repository)
+    {
+    }
 
     public function __invoke(UpdateProductCommand $command): void
     {
@@ -24,4 +26,3 @@ final class UpdateProductCommandHandler implements HandlerInterface
         $this->repository->save($product);
     }
 }
-

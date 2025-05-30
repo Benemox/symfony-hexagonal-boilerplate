@@ -3,7 +3,20 @@
 namespace App\Product\Infrastructure\Symfony\Model\Response;
 
 use App\Product\Domain\Entity\Product;
+use OpenApi\Attributes as OA;
 
+#[OA\Schema(
+    schema: 'ProductListSchema',
+    description: 'List of products',
+    properties: [
+        new OA\Property(
+            property: 'products',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/Product')
+        )
+    ],
+    type: 'object'
+)]
 class ProductListSchema
 {
     /** @var array<int, array<string, mixed>> */

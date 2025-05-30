@@ -13,5 +13,6 @@ class UpdateProductCommand implements CommandMessageInterface
         public ProductId $id,
         public ProductName $name,
         public ProductPrice $price
-    ) {}
+    ) {
+    }
 }

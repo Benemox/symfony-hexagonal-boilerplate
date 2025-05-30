@@ -14,7 +14,8 @@ abstract class AbstractAPIController extends AbstractController
     public function __construct(
         protected MessageBusInterface $commandBus,
         protected MessageBusInterface $queryBus
-    ) {}
+    ) {
+    }
 
     protected function dispatch(object $message): Envelope
     {

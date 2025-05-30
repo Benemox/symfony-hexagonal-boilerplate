@@ -10,7 +10,8 @@ use App\Shared\Domain\Bus\HandlerInterface;
 class GetProductDetailsQueryHandler implements HandlerInterface
 {
     public function __construct(private ProductRepositoryInterface $repository)
-    {}
+    {
+    }
 
     public function __invoke(GetProductDetailsQuery $query): Product
     {

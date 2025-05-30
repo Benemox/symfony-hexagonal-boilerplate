@@ -15,5 +15,4 @@ interface ProductRepositoryInterface
     public function delete(Product $product): void;
 
     public function findAllWithFilters(?ListProductsQueryFilters $filters): array;
-
 }

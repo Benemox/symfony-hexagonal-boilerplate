@@ -9,5 +9,6 @@ class DeleteProductCommand implements CommandMessageInterface
 {
     public function __construct(
         public ProductId $id
-    ) {}
+    ) {
+    }
 }

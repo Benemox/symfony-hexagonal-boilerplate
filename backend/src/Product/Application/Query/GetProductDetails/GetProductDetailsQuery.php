@@ -7,5 +7,7 @@ use App\Shared\Domain\Bus\QueryMessageInterface;
 
 class GetProductDetailsQuery implements QueryMessageInterface
 {
-    public function __construct(public ProductId $id) {}
+    public function __construct(public ProductId $id)
+    {
+    }
 }

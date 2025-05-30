@@ -2,8 +2,6 @@
 
 namespace App\Product\Application\Query\ListProducts;
 
-
-
 use App\Product\Domain\Exception\InvalidListQueryFilterException;
 
 class ListProductsQueryFilters

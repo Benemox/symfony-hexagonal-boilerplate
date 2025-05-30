@@ -1,189 +1,226 @@
-# README.md - Project Setup
+# Project Setup Guide
 
 ## 1. Introduction
-This document provides a comprehensive guide for installing, configuring, and running the project. It covers prerequisites, setup instructions, common issues, and troubleshooting steps.
+This document provides a complete guide to install, configure, and run the project. It covers prerequisites, setup steps, common issues, and testing instructions.
 
 ---
 
 ## 2. Project Overview
-- **Frontend:** Vue.js (Version X.X.X)
-- **Backend:** Symfony (Version X.X.X)
-- **Architecture:**
-    - **Frontend:** Modular Vue.js components with Vue Router and Vuex (if applicable)
-    - **Backend:** Hexagonal architecture following Domain-Driven Design (DDD)
-    - **Infrastructure:** Dockerized environment with separate services
+
+- **Backend:** Symfony 6
+- **Architecture:** Hexagonal Architecture with Domain-Driven Design (DDD)
+- **Infrastructure:** Dockerized services with separate containers for backend, database, and message queue
+- **Messaging:** Symfony Messenger with RabbitMQ for asynchronous command and event handling
 
 ### Project Structure
+
 ```
 project-root/
-│── backend/             # Symfony backend
-│   ├── src/             # Application source code
-│   │   ├── Card/        # Card-related logic
-│   │   ├── Shared/      # Shared utilities and common logic
-│   │   ├── Provider/    # External service providers and integrations
-│   │   ├── Auth/        # Authentication and security mechanisms
-│   ├── config/          # Configuration files
-│   ├── bin/             # Symfony CLI commands
-│   ├── tests/           # Backend tests
-│   ├── public/          # Public files (entry point for web requests)
-│   ├── .env             # Environment variables
-│   └── composer.json    # Dependencies
+│── backend/                 # Symfony backend source code
+│   ├── src/                 # Application code (domain, application, infrastructure)
+│   │   ├── Product/         # Product domain logic and use cases
+│   │   ├── Shared/          # Shared utilities and common code
+│   │   ├── Auth/            # Authentication and security
+│   ├── config/              # Configuration files
+│   ├── bin/                 # Symfony CLI and console commands
+│   ├── tests/               # PHPUnit tests
+│   ├── public/              # Web public directory (document root)
+│   ├── .env                 # Environment variables for Symfony
+│   └── composer.json        # PHP dependencies
 │
-│── frontend/            # Vue.js frontend
-│   ├── src/             # Vue application source code
-│   │   ├── components/  # UI components
-│   │   ├── views/       # Page views
-│   │   ├── store/       # Vuex store (if used)
-│   │   ├── router/      # Vue Router configuration
-│   │   ├── services/    # API service handlers
-│   │   ├── assets/      # Static assets (images, styles, etc.)
-│   ├── public/          # Static files
-│   ├── package.json     # Frontend dependencies
-│
-│── docker/              # Docker configurations
-│── Makefile             # Make commands
-│── README.md            # Project documentation
+│── docker/                  # Docker and Docker Compose configurations
+│── Makefile                 # Make commands for automation
+│── README.md                # This documentation file
 ```
 
 ---
 
 ## 3. Prerequisites
-Ensure you have the following installed before running the project:
 
-- **Docker** and **Docker Compose**
-- **Make** (for executing predefined commands)
-- **Git** (if cloning from a repository)
-- **Node.js & npm** (for frontend dependencies)
-- **Proper system permissions** to run Docker containers
+Make sure the following are installed on your development machine:
+
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Make](https://www.gnu.org/software/make/)
+- [Git](https://git-scm.com/) (if cloning the repository)
+- Proper permissions to run Docker containers
 
 ---
 
 ## 4. Installation & Setup
 
-### 4.1. Clone the Repository
-If using a ZIP archive, extract and navigate to the project directory:
+### 4.1 Clone the Repository
+If starting from a ZIP archive, extract and enter the directory:
+
 ```bash
- unzip project.zip -d project
- cd project
+unzip project.zip -d project
+cd project
 ```
 
-### 4.2. Set Up Environment Variables
-Ensure the `.env` file exists in the root of both the **backend** and **frontend** directories:
-```bash
- cp backend/.env.example backend/.env
- cp frontend/.env.example frontend/.env
-```
-Edit the environment variables as needed.
+### 4.2 Environment Configuration
+Copy example environment files and adjust as needed:
 
-### 4.3. Build and Start Containers
-To build and start all required services:
 ```bash
- make up
-```
-This will initialize the Docker containers.
-
-
-To rebuild from scratch:
-```bash
- make rebuild
-```
-### 4.4. 🚨Important: Import Credit Cards Data
-After starting the backend, you must enter the container and run 
-the following command to import credit card data from the external API
-```bash
- docker exec -it symfony_app bash
-bin/console app:import-cards
+cp backend/.env.example backend/.env
+# If frontend exists, do the same for frontend/.env
 ```
 
-### 4.5. Verify Running Containers
-Check the running containers:
+Edit `.env` files to set database credentials, RabbitMQ connection details, API secrets, etc.
+
+### 4.3 Start the Containers
+
+Use Make to build and start the environment:
+
 ```bash
- docker ps
+make up
 ```
-To view logs:
+
+This command builds the Docker images and launches all containers including backend, MySQL, RabbitMQ, and workers.
+
+### 4.4 Run Database Migrations
+Run database migrations to set up the schema:
+
 ```bash
- docker-compose logs -f
+make migrate
+```
+### 4.5 Verify Containers are Running
+
+Check container status:
+
+```bash
+docker ps
+```
+
+Stream logs:
+
+```bash
+docker-compose logs -f
 ```
 
 ---
 
-## 5. Troubleshooting
+## 5. Common Issues & Troubleshooting
 
-### 5.1. Permission Issues
-If you encounter permission errors, change file ownership:
+### 5.1 Permission Errors
+If you get file permission issues:
+
 ```bash
- sudo chown -R $USER:$USER .
+sudo chown -R $USER:$USER .
+chmod +x Makefile
+sudo usermod -aG docker $USER
 ```
-Or grant execution permissions to `make`:
-```bash
- chmod +x Makefile
-```
-If Docker permission issues arise, add your user to the Docker group:
-```bash
- sudo usermod -aG docker $USER
-```
+
 Then log out and back in.
 
-### 5.2. Containers Not Starting
-If containers fail to start, try:
+### 5.2 Containers Fail to Start
+
+Try cleaning up volumes and stale containers:
+
 ```bash
- make down
- docker system prune -af
- make up
+make down
+docker system prune -af
+make up
 ```
 
-### 5.3. Application Not Responding
-- Ensure containers are running: `docker ps`
-- Check logs for errors: `docker-compose logs -f`
-- Confirm the correct port is exposed in `.env`
+### 5.3 Application Not Responding
+
+- Confirm containers are up (`docker ps`)
+- Check logs for errors (`docker-compose logs -f`)
+- Verify environment variables and ports
 
 ---
 
-## 6. Stopping the Project
-📌To stop running containers:
+## 6. Stopping and Cleaning the Project
+
+Stop running containers:
+
 ```bash
- make down
+make down
 ```
-To remove volumes and clean up the environment:
+
+Clean volumes and cache for a fresh start:
+
 ```bash
- make clean
+make clean
 ```
 
 ---
-## 8. Testing the Project and PHPCS
-✅ Running PHP_CodeSniffer (PHPCS)
-To ensure your code follows coding standards, use PHP_CodeSniffer (phpcs).
+
+## 7. Running Tests and Code Quality
+
+### 7.1 PHP_CodeSniffer (PHPCS)
+
+Check coding standards compliance:
+
 ```bash
 vendor/bin/phpcs --standard=PSR12 src/
 vendor/bin/phpcbf --standard=PSR12 src/
 ```
-or
-```bash
- composer phpcs
- composer phpcbf
- ```
-✅ Running PHPUnit Tests
 
-🚨 Remember `ENV=test` must be set in the `.env` file for testing.
-To ensure the project functions correctly, run PHPUnit tests.
+Or with composer scripts:
 
-📌 Run all tests
 ```bash
- vendor/bin/phpunit
+composer phpcs
+composer phpcbf
 ```
-or
+
+### 7.2 PHPUnit Tests
+
+Make sure `APP_ENV=test` is set in `.env` for testing environment.
+
+Run all tests:
+
 ```bash
- composer test
+vendor/bin/phpunit
 ```
-## 9. API Documentation
-🚀 Access the API documentation
-Once the backend is running, open:
+or via make command:
+
+```bash 
+make test
+```
+Or via composer script:
+
 ```bash
- http://localhost:8001/api/doc
+composer test
 ```
-🛠 Customize API documentation
-Modify `config/packages/nelmio_api_doc.yaml` to adjust the documentation settings.
+
+---
+
+## 8. API Documentation
+
+Access API docs (Swagger/OpenAPI):
+
+```
+http://localhost:8001/api/doc
+```
+
+Modify API doc settings in:
+
+```
+config/packages/nelmio_api_doc.yaml
+```
+
+---
+
+## 9. Makefile Commands
+
+| Command           | Description                          |
+|-------------------|------------------------------------|
+| `make up`         | Build and start Docker containers  |
+| `make down`       | Stop and remove containers & volumes|
+| `make clean`      | Remove containers, volumes, cache  |
+| `make migrate`    | Run Doctrine migrations             |
+| `make test`       | Run PHPUnit tests                   |
+| `make phpcs`      | Run PHP Code Sniffer               |
+| `make logs`       | Tail logs of all containers         |
+| `make worker-logs`| Tail logs of messenger worker       |
+
+---
 
 ## 10. Conclusion
-This guide outlines the essential steps to install, configure, and run the project. Following these instructions ensures a smooth development setup. If you encounter further issues, consult Docker, Make, and Vue.js/Symfony documentation.
 
+Following this guide will help you set up a stable development environment, run tests, and maintain code quality in a hexagonal architecture Symfony backend with asynchronous messaging powered by RabbitMQ.
+
+For further assistance, consult official docs for Symfony, Docker, and RabbitMQ.
+
+---

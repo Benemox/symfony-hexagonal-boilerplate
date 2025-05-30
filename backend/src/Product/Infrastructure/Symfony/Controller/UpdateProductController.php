@@ -14,7 +14,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use OpenApi\Attributes as OA;
 
-
 class UpdateProductController extends AbstractController
 {
     #[Route('/api/products/{id}', name: 'update_product', methods: ['PUT'])]

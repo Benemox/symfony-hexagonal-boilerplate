@@ -11,5 +11,6 @@ class CreateProductCommand implements CommandMessageInterface
     public function __construct(
         public ProductName $name,
         public ProductPrice $price
-    ) {}
+    ) {
+    }
 }

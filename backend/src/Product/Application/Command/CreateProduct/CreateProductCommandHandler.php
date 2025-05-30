@@ -12,7 +12,8 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 class CreateProductCommandHandler implements HandlerInterface
 {
     public function __construct(private ProductRepositoryInterface $repository)
-    {}
+    {
+    }
 
     public function __invoke(CreateProductCommand $command): void
     {
@@ -20,7 +21,7 @@ class CreateProductCommandHandler implements HandlerInterface
             throw new \InvalidArgumentException('Product with this name already exists.');
         }
         $id = ProductId::generate();
-        $product = new Product($id ,$command->name, $command->price);
+        $product = new Product($id, $command->name, $command->price);
         $this->repository->save($product);
     }
 }

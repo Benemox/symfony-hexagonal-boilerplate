@@ -45,8 +45,7 @@ class CreateProductController extends AbstractController
     public function __invoke(
         #[MapRequestPayload] CreateProductRequest $request,
         MessageBusInterface $commandBus
-    ): JsonResponse
-    {
+    ): JsonResponse {
 
         $command = new CreateProductCommand(
             new ProductName($request->name),

@@ -67,6 +67,5 @@ class ListProductsController extends AbstractController
         $products = $envelope->last(HandledStamp::class)?->getResult();
 
         return $this->json(new ProductListSchema($products));
-
     }
 }

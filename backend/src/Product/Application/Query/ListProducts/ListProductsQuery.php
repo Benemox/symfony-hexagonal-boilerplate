@@ -8,5 +8,6 @@ class ListProductsQuery implements QueryMessageInterface
 {
     public function __construct(
         public readonly ?ListProductsQueryFilters $filters = null
-    ) {}
+    ) {
+    }
 }
