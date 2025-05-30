@@ -9,6 +9,8 @@ use App\Product\Domain\ValueObject\ProductId;
 interface ProductRepositoryInterface
 {
     public function find(ProductId $id): ?Product;
+
+    public function findByName(string $name): ?Product;
     public function save(Product $product): void;
     public function delete(Product $product): void;
 

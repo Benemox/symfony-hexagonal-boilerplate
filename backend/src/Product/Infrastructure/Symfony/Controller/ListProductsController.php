@@ -8,11 +8,11 @@ use App\Product\Domain\Exception\InvalidListQueryFilterException;
 use App\Product\Infrastructure\Symfony\Model\Response\ProductListSchema;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use OpenApi\Attributes as OA;
-
 
 class ListProductsController extends AbstractController
 {
@@ -24,16 +24,16 @@ class ListProductsController extends AbstractController
         parameters: [
             new OA\Parameter(
                 name: 'orderBy',
+                description: 'Order by field (name, price, createdAt)',
                 in: 'query',
                 required: false,
-                description: 'Order by field (name, price, createdAt)',
                 schema: new OA\Schema(type: 'string', enum: ['name', 'price', 'createdAt'])
             ),
             new OA\Parameter(
                 name: 'direction',
+                description: 'Order direction',
                 in: 'query',
                 required: false,
-                description: 'Order direction',
                 schema: new OA\Schema(type: 'string', enum: ['asc', 'desc'])
             ),
         ],
@@ -62,9 +62,11 @@ class ListProductsController extends AbstractController
             return $this->json(['error' => $e->getMessage()], 400);
         }
 
-        $products = $queryBus->dispatch(new ListProductsQuery($filters));
-        $products = $products->getMessage();
+
+        $envelope = $queryBus->dispatch(new ListProductsQuery($filters));
+        $products = $envelope->last(HandledStamp::class)?->getResult();
 
         return $this->json(new ProductListSchema($products));
+
     }
 }

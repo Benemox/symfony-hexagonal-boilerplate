@@ -4,34 +4,29 @@ framework:
 
         buses:
             command.bus:
-                default_middleware: false
-                middleware:
-                    - doctrine_transaction
-                    - validation
-                    - 'command.bus.middleware.send'
-                    - handle_message
+                default_middleware: true
 
             query.bus:
-                default_middleware: false
-                middleware:
-                    - validation
-                    - handle_message
+                default_middleware: true
 
             event.bus:
-                default_middleware: false
-                middleware:
-                    - 'event.bus.middleware.send'
-                    - handle_message
+                default_middleware: true
 
         transports:
             command_async:
                 dsn: '%env(MESSENGER_COMMAND_TRANSPORT_DSN)%'
-
-            query_sync:
-                dsn: 'sync://'
+                options:
+                    queues:
+                        command_async: ~
 
             event_async:
                 dsn: '%env(MESSENGER_EVENT_TRANSPORT_DSN)%'
+                options:
+                    queues:
+                        event_async: ~
+
+            query_sync:
+                dsn: '%env(MESSENGER_QUERY_TRANSPORT_DSN)%'
 
         routing:
             App\Shared\Domain\Bus\CommandMessageInterface: command_async

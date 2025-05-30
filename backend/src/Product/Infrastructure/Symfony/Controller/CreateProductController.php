@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Attributes as OA;
 
@@ -46,12 +47,13 @@ class CreateProductController extends AbstractController
         MessageBusInterface $commandBus
     ): JsonResponse
     {
+
         $command = new CreateProductCommand(
             new ProductName($request->name),
             new ProductPrice($request->price)
         );
-       $product = $commandBus->dispatch($command);
+        $commandBus->dispatch($command);
 
-        return $this->json(['message' => 'Product created successfully'], 201);
+        return $this->json(['message' => 'Product accepted and will be processed'], 202);
     }
 }

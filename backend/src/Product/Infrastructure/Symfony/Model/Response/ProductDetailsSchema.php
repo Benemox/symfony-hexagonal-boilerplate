@@ -14,6 +14,7 @@ class ProductDetailsSchema
 
     public function __construct(Product $product)
     {
+
         $this->id = (string)$product->getId();
         $this->name = (string)$product->getName();
         $this->price = $product->getPrice()->value();

@@ -26,13 +26,24 @@ services:
       RABBITMQ_DEFAULT_PASS: password
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+  worker:
+    build: .
+    depends_on:
+      - backend
+      - rabbitmq
+    entrypoint: [ "./entrypoint.worker.sh" ]
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - .:/var/www/html
   database:
     image: mysql:8.0
     container_name: mysql_db
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: credit_cards
+      MYSQL_DATABASE: database
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:

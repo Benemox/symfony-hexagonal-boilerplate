@@ -1,42 +1,48 @@
 #!/bin/sh
 set -e
 
-echo "🔧 Adjusting permissions for Symfony..."
+echo "🐘 Esperando a que MySQL esté disponible en database:3306..."
+until nc -z database 3306; do
+  echo "⏳ MySQL aún no está listo. Esperando..."
+  sleep 1
+done
+echo "✅ MySQL está listo."
 
-echo "📦 Checking Composer dependencies..."
+echo "🔧 Ajustando permisos para Symfony..."
+
+echo "📦 Verificando dependencias con Composer..."
 if [ ! -d "vendor" ]; then
-    echo "📂 Ensuring vendor directory exists and is writable..."
+    echo "📂 Asegurando que vendor/ existe y es escribible..."
     mkdir -p /var/www/html/vendor
     chown -R www-data:www-data /var/www/html/vendor
     chmod -R 775 /var/www/html/vendor
-    echo "📦 vendor/ not found, running composer install..."
+    echo "📦 vendor/ no encontrado, ejecutando composer install..."
     composer install --no-interaction --optimize-autoloader
 else
-    echo "📦 vendor/ found, skipping composer install."
+    echo "📦 vendor/ encontrado, composer install omitido."
 fi
 
-echo "🔹 Ensuring log directories exist..."
+echo "🔹 Asegurando carpetas de logs..."
 mkdir -p /var/www/html/var/log
 
 if [ "$(id -u)" = "0" ]; then
-    echo "🔹 Setting ownership for cache and logs..."
+    echo "🔹 Ajustando permisos de var/ y config/..."
     chown -R www-data:www-data /var/www/html/var /var/www/html/config || true
     chmod -R 775 /var/www/html/var /var/www/html/config
 fi
 
-# 👇 Esta es la clave: crea la migración inicial si no hay ninguna
 if [ -z "$(ls -A /var/www/html/migrations/*.php 2>/dev/null)" ]; then
-    echo "🛠 No migrations found, creating the initial migration..."
+    echo "🛠 No se encontraron migraciones, creando una inicial..."
     php bin/console doctrine:migrations:diff || true
 fi
 
-echo "⚙️ Running Doctrine migrations..."
+echo "⚙️ Ejecutando migraciones Doctrine..."
 php bin/console doctrine:migrations:migrate --no-interaction || true
 
-echo "🔍 Current directory permissions:"
+echo "🔍 Permisos actuales:"
 ls -la /var/www/html/var
 ls -la /var/www/html/public
 ls -la /var/www/html/config
 
-echo "🚀 Starting Apache..."
+echo "🚀 Iniciando Apache..."
 exec apache2-foreground

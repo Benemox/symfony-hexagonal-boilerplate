@@ -6,6 +6,7 @@ use App\Product\Application\Query\ListProducts\ListProductsQueryFilters;
 use App\Product\Domain\Entity\Product;
 use App\Product\Domain\Repository\ProductRepositoryInterface;
 use App\Product\Domain\ValueObject\ProductId;
+use Doctrine\ORM\EntityManagerInterface;
 
 class ProductRepository implements ProductRepositoryInterface
 {
@@ -18,6 +19,10 @@ class ProductRepository implements ProductRepositoryInterface
         return $this->em->getRepository(Product::class)->find($id->value());
     }
 
+    public function findByName(string $name): ?Product
+    {
+        return $this->em->getRepository(Product::class)->findOneBy(['name' => $name]);
+    }
     public function save(Product $product): void
     {
         $this->em->persist($product);

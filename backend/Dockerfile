@@ -7,6 +7,7 @@ ARG APP_ENV=dev
 ENV APP_ENV=${APP_ENV}
 
 RUN apt-get update && apt-get install -y \
+    netcat-traditional \
     librabbitmq-dev \
     libssh-dev \
     libpng-dev \
@@ -46,6 +47,8 @@ COPY . .
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+COPY entrypoint.worker.sh /entrypoint.worker.sh
+RUN chmod +x /entrypoint.worker.sh
 
 # Ensure the public directory is set as DocumentRoot
 RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf

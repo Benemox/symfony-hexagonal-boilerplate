@@ -3,8 +3,9 @@
 namespace App\Product\Application\Query\ListProducts;
 
 use App\Product\Domain\Repository\ProductRepositoryInterface;
+use App\Shared\Domain\Bus\HandlerInterface;
 
-class ListProductsQueryHandler
+class ListProductsQueryHandler  implements HandlerInterface
 {
     public function __construct(private ProductRepositoryInterface $repository)
     {}

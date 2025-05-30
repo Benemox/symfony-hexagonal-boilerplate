@@ -7,6 +7,7 @@ use App\Product\Domain\Exception\ProductNotFoundException;
 use App\Product\Domain\ValueObject\ProductId;
 use App\Product\Infrastructure\Symfony\Model\Response\ProductDetailsSchema;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,9 +23,9 @@ class GetProductDetailsController extends AbstractController
         parameters: [
             new OA\Parameter(
                 name: 'id',
+                description: 'Product UUID',
                 in: 'path',
                 required: true,
-                description: 'Product UUID',
                 schema: new OA\Schema(type: 'string', format: 'uuid')
             )
         ],
@@ -44,13 +45,13 @@ class GetProductDetailsController extends AbstractController
     )]
     public function __invoke(string $id, MessageBusInterface $queryBus): JsonResponse
     {
-        try {
-            $product = $queryBus->dispatch(new GetProductDetailsQuery(new ProductId($id)));
-            $product = $product->getMessage();
-            return $this->json(new ProductDetailsSchema($product));
-        } catch (ProductNotFoundException $e) {
-            return $this->json(['error' => $e->getMessage()], 404);
+        $envelope = $queryBus->dispatch(new GetProductDetailsQuery(new ProductId($id)));
+        $product = $envelope->last(HandledStamp::class)?->getResult();
+
+        if (!$product) {
+            return $this->json(['error' => 'Product not found'], 404);
         }
 
+        return $this->json(new ProductDetailsSchema($product));
     }
 }

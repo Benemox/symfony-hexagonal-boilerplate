@@ -20,9 +20,9 @@ class DeleteProductController extends AbstractController
         parameters: [
             new OA\Parameter(
                 name: 'id',
+                description: 'UUID of the product to delete',
                 in: 'path',
                 required: true,
-                description: 'UUID of the product to delete',
                 schema: new OA\Schema(type: 'string', format: 'uuid')
             )
         ],
