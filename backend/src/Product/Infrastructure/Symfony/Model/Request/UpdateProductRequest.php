@@ -5,6 +5,10 @@ namespace App\Product\Infrastructure\Symfony\Model\Request;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[OA\Schema(
+    description: 'Update Product Request',
+    required: ['name', 'price']
+)]
 class UpdateProductRequest
 {
     public function __construct(

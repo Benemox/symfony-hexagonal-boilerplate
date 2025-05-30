@@ -11,10 +11,43 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use OpenApi\Attributes as OA;
+
 
 class ListProductsController extends AbstractController
 {
     #[Route('/api/products', name: 'list_products', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/products',
+        summary: 'List products',
+        tags: ['Product'],
+        parameters: [
+            new OA\Parameter(
+                name: 'orderBy',
+                in: 'query',
+                required: false,
+                description: 'Order by field (name, price, createdAt)',
+                schema: new OA\Schema(type: 'string', enum: ['name', 'price', 'createdAt'])
+            ),
+            new OA\Parameter(
+                name: 'direction',
+                in: 'query',
+                required: false,
+                description: 'Order direction',
+                schema: new OA\Schema(type: 'string', enum: ['asc', 'desc'])
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'List of products',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: ProductListSchema::class)
+                )
+            )
+        ]
+    )]
     public function __invoke(Request $request, MessageBusInterface $queryBus): JsonResponse
     {
         try {
